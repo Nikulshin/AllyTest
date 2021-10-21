@@ -46,8 +46,8 @@ WITH adj as (
            case when t.assets > '3000000'::money then 1.23 else 1 end as limit_adj2
     FROM bank b
     INNER JOIN approval a on b.id = a.bank_id AND a.is_approved = TRUE
-    LEFT JOIN riskrating r on b.id = r.bank_id AND r.rating_date = CAST('2021-10-18' as date)
-    LEFT JOIN totalassets t on b.id = t.bank_id AND t.valuation_date = CAST('2021-10-18' as date)
+    LEFT JOIN riskrating r on b.id = r.bank_id AND r.rating_date = CAST('2021-10-16' as date)
+    LEFT JOIN totalassets t on b.id = t.bank_id AND t.valuation_date = CAST('2021-10-16' as date)
 )
 SELECT adj.name, '2000000'::money * adj.limit_adj1 * adj.limit_adj2
 FROM adj;
