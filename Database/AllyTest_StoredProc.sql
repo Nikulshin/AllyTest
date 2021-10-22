@@ -1,9 +1,14 @@
 -- Base limit default is $2M
-do $$
+create or replace procedure calculateRatings(
+   valuationDateStr varchar
+)
+language plpgsql
+as $$
 declare
-  baseLimit money := 2000000;
-  valuationDate date := CAST('2021-10-16' as date);
+    valuationDate timestamp;
 begin
+
+    valuationDate = TO_DATE(valuationDateStr,'YYYYMMDD');
 
     DELETE FROM tradelimit WHERE valuation_date = valuationDate;
 
@@ -23,15 +28,13 @@ begin
         LEFT JOIN totalassets t on b.id = t.bank_id AND t.valuation_date = valuationDate
     )
     INSERT INTO tradelimit (calculated_limit, bank_id, valuation_date)
-    SELECT baseLimit * adj.limit_adj1 * adj.limit_adj2, adj.id, valuationDate
+    SELECT 2000000::money * adj.limit_adj1 * adj.limit_adj2, adj.id, valuationDate
     FROM adj;
 
+    commit;
+end;$$
 
-/*  if not found then
-     raise notice'The film % could not be found',
-	    input_film_id;
-  end if;*/
-end $$;
+
 
 
 WITH adj as (
@@ -53,21 +56,9 @@ SELECT adj.name, '2000000'::money * adj.limit_adj1 * adj.limit_adj2
 FROM adj;
 
 
-/*CREATE FUNCTION calculateTradeLimits (valuationDate date, baseLimit money)
-RETURNS TABLE(name varchar(250)) AS $$
-    SELECT name FROM bank;
-$$ LANGUAGE SQL;*/
+call calculateRatings('2021-10-16');
 
-drop function calculateTradeLimits;
-create or replace function calculateTradeLimits(valuationDate date, baseLimit money)
-returns table (name1 varchar, bsLim money) as $$
-begin
-    if baseLimit is null then
-        baseLimit := 2000000;
-    end if;
-  return query
-    SELECT name, baseLimit FROM bank;
-end;
-$$ language plpgsql;
+select * from tradelimit;
+delete from tradelimit;
 
-SELECT * FROM calculateTradeLimits(CAST('2021-10-16' as date), null)
+
