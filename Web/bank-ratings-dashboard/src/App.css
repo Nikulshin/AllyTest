@@ -1,5 +1,12 @@
+@import "../node_modules/react-datepicker/dist/react-datepicker.min.css";
+
 .App {
-  text-align: center;
+
+}
+
+.Inputs {
+  font-size: 150%;
+  margin: 10px;
 }
 
 .App-logo {
@@ -15,8 +22,9 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  max-height: 100vh;
   display: flex;
+  text-align: center;
   flex-direction: column;
   align-items: center;
   justify-content: center;

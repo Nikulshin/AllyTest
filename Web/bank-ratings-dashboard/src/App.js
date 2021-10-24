@@ -1,21 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
 import {InputsComponent} from "./components/Inputs";
+import {Container} from "react-bootstrap";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <div>
-          <InputsComponent/>
-        </div>
-      </header>
-    </div>
-  );
+
+    const requestListener = () => {
+        alert('Done!');
+    };
+    const invokeCalc = (date) => {
+        alert('before!');
+      let req = new XMLHttpRequest();
+      req.addEventListener("load", requestListener);
+      req.open("POST", "https://localhost:5001/TradeLimits?valuationDate=" + date);
+      req.send();
+    };
+
+    return (
+      <Container className="p-3" >
+          <h1 className="header">Welcome To Bank Ratings Calculator</h1>
+          <div className="Inputs">
+              <InputsComponent calculate={invokeCalc}/>
+          </div>
+      </Container>
+
+    );
 }
 
 export default App;
