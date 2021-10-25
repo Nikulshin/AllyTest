@@ -16,6 +16,8 @@ namespace BankRatings
 {
     public class Startup
     {
+        readonly string AllowAllOrigins = "_AllowAllOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -27,6 +29,17 @@ namespace BankRatings
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                              builder =>
+                              {
+                                  builder.WithOrigins("localhost:3000")
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod();
+                              });
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -45,10 +58,12 @@ namespace BankRatings
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BankRatings v1"));
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseCors();
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

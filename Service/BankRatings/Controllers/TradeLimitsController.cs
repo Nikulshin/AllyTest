@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Cors;
 using Npgsql;
 
 namespace BankRatings.Controllers
@@ -21,30 +22,36 @@ namespace BankRatings.Controllers
         }
 
         [HttpPost]
-        public bool Calculate(string valuationDate) {
+        public string Calculate(string valuationDate) {
             //valuationDate = valuationDate.Date;
             var connString = "Host=127.0.0.1;Database=postgres;Username=postgres;Password=blah";
+            Console.Out.WriteLine("Entered Calculate");
+
 
             using (var conn = new NpgsqlConnection(connString)) {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand("CALL calculateRatings(@valuationDate)", conn)) {
                     //cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("valuationDate", valuationDate);
-                    return cmd.ExecuteNonQuery() > 0;
+                    return "{\"result\": \"" + (cmd.ExecuteNonQuery() > 0).ToString() + "\"}" ;
                 }
             }
         }        
         
 
         [HttpGet]
-        public IEnumerable<TradeLimits> Get(DateTime valuationDate)
+        public IEnumerable<TradeLimits> Get(string valuationDate)
         {
-            valuationDate = valuationDate.Date;
             var connString = "Host=127.0.0.1;Database=postgres;Username=postgres;Password=blah";
 
             using (var conn = new NpgsqlConnection(connString)) {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("select id, calculated_limit, bank_id, valuation_date from tradelimit;", conn)) {
+                using (var cmd = new NpgsqlCommand(@"
+                    select id, calculated_limit, bank_id, valuation_date 
+                    from tradelimit 
+                    where valuation_date = TO_DATE( @valDate,'YYYY-MM-DD');", conn)) 
+                {
+                    cmd.Parameters.AddWithValue("valDate", valuationDate);
                     var list = new List<TradeLimits>();
                     using (var reader = cmd.ExecuteReader()) {
                         while (reader.Read()) {

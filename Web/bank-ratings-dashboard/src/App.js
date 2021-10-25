@@ -4,15 +4,25 @@ import {Container} from "react-bootstrap";
 
 function App() {
 
-    const requestListener = () => {
-        alert('Done!');
-    };
     const invokeCalc = (date) => {
-        alert('before!');
-      let req = new XMLHttpRequest();
-      req.addEventListener("load", requestListener);
-      req.open("POST", "https://localhost:5001/TradeLimits?valuationDate=" + date);
-      req.send();
+        let isoStr = date.toISOString();
+        let dateStr = isoStr.substring(0, isoStr.indexOf('T'));
+
+        let url = "http://localhost:5000/TradeLimits?valuationDate=" + dateStr
+        alert(url);
+
+      fetch(url,
+          {
+              method: "POST",
+              headers: {
+                  "Accept": "text/plain"
+              }
+          })
+          .then(r => {
+              let result = r.json();
+              alert(result);
+          }).catch(reason => console.error(reason));
+
     };
 
     return (

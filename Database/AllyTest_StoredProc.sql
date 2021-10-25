@@ -8,7 +8,7 @@ declare
     valuationDate timestamp;
 begin
 
-    valuationDate = TO_DATE(valuationDateStr,'YYYYMMDD');
+    valuationDate = TO_DATE(valuationDateStr,'YYYY-MM-DD');
 
     DELETE FROM tradelimit WHERE valuation_date = valuationDate;
 
