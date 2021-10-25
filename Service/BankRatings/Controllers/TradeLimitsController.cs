@@ -47,8 +47,9 @@ namespace BankRatings.Controllers
             using (var conn = new NpgsqlConnection(connString)) {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand(@"
-                    select id, calculated_limit, bank_id, valuation_date 
-                    from tradelimit 
+                    select l.id, l.calculated_limit, b.name, l.valuation_date 
+                    from tradelimit l
+                    inner join bank b on b.id = l.bank_id
                     where valuation_date = TO_DATE( @valDate,'YYYY-MM-DD');", conn)) 
                 {
                     cmd.Parameters.AddWithValue("valDate", valuationDate);
@@ -59,7 +60,7 @@ namespace BankRatings.Controllers
                                     {
                                         Id = reader.GetInt64(0),
                                         CalcLimit = reader.GetDecimal(1),
-                                        BankId = reader.GetInt64(2),
+                                        Name = reader.GetString(2),
                                         ValuationDate = reader.GetDateTime(3)
                                     }
                             );

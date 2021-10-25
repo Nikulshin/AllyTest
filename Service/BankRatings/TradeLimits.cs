@@ -10,6 +10,8 @@ namespace BankRatings
 
         public long BankId { get; set; }
 
+        public string Name {get; set;}
+
         public DateTime ValuationDate { get; set; }
     }
 }
