@@ -1,7 +1,7 @@
 import './App.css';
 import {InputsComponent} from "./components/Inputs";
 import {Container} from "react-bootstrap";
-import {AgGridColumn, AgGridReact} from "ag-grid-react";
+import {AgGridReact} from "ag-grid-react";
 import {useState} from "react";
 
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -16,6 +16,33 @@ function App() {
         setGridApi(params.api);
         //setGridColumnApi(params.columnApi);
     };
+
+    const formatMoney = (params) => {
+        return params.value.toLocaleString();
+    }
+
+    const formatDate = (params) => {
+        let date = params.value;
+        let dateParts = date.split('T');
+        return dateParts[0];
+    }
+
+    const colDefs = [
+        {
+            field: "name",
+            headerName: "Bank"
+        },
+        {
+            field: "calcLimit",
+            headerName: "Trading Limit",
+            valueFormatter: formatMoney
+        },
+        {
+            field: "valuationDate",
+            headerName: "Date",
+            valueFormatter: formatDate
+        }
+    ];
 
     const urlBase = "http://localhost:5000/TradeLimits?valuationDate=";
 
@@ -70,10 +97,13 @@ function App() {
                 <AgGridReact
                     rowData={tradingLimits}
                     onGridReady={onGridReady}
+                    columnDefs={colDefs}
                 >
+{/*
                     <AgGridColumn field="name" headerName="Bank"></AgGridColumn>
                     <AgGridColumn field="calcLimit" headerName="Trading Limit"></AgGridColumn>
                     <AgGridColumn field="valuationDate" headerName="Date"></AgGridColumn>
+*/}
                 </AgGridReact>
             </div>
         </div>
